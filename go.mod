@@ -2,6 +2,8 @@ module Aigarage
 
 go 1.23.4
 
+replace lib => ./lib
+
 require github.com/gin-gonic/gin v1.11.0
 
 require (
