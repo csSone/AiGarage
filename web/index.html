@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人AI技术分析平台，涵盖模型微调、全量SFT、后训练等前沿技术">
+    <meta name="keywords" content="AI,人工智能,模型微调,SFT,后训练,机器学习,深度学习">
+    <title>个人AI技术研究中心 - 专注人工智能前沿技术分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background-color: #2c3e50;
+            padding: 1rem 0;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav li {
+            margin: 0 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #667eea;
+        }
+        
+        main {
+            padding: 3rem 0;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .tech-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .tech-card h3 {
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .icp-info {
+            background-color: #1a2530;
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .contact-info {
+            margin-top: 1rem;
+        }
+        
+        .contact-info a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 0.5rem 0;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>个人AI技术研究中心</h1>
+            <p>专注人工智能前沿技术分析与应用研究</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#models">模型微调</a></li>
+                <li><a href="#sft">全量SFT</a></li>
+                <li><a href="#post-training">后训练</a></li>
+                <li><a href="#applications">应用案例</a></li>
+                <li><a href="#contact">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="section">
+            <h2>关于我们</h2>
+            <p>本平台致力于个人AI技术的研究与分析，重点关注模型微调、全量监督微调（SFT）以及后训练等前沿技术领域。我们通过深入的技术分析和实践案例，帮助个人开发者和研究人员更好地理解和应用这些技术。</p>
+            <p>在AI技术快速发展的今天，掌握模型优化和定制化技术变得尤为重要。我们提供专业的技术分析、最佳实践指南以及最新的研究成果分享，助力个人在AI领域的成长与发展。</p>
+        </section>
+
+        <section class="section" id="models">
+            <h2>模型微调技术</h2>
+            <p>模型微调（Fine-tuning）是将预训练模型适配到特定任务或领域的关键技术。通过在特定数据集上继续训练，模型能够学习到目标任务的专业知识，同时保留预训练阶段获得的通用能力。</p>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>微调策略</h3>
+                    <p>包括参数高效微调（PEFT）、LoRA、Adapter等技术，能够在保持模型性能的同时显著减少计算资源需求。</p>
+                </div>
+                <div class="tech-card">
+                    <h3>数据准备</h3>
+                    <p>高质量的领域数据是微调成功的关键。我们分析数据清洗、标注策略以及数据增强技术，确保微调效果最大化。</p>
+                </div>
+                <div class="tech-card">
+                    <h3>评估指标</h3>
+                    <p>建立科学的评估体系，包括准确率、召回率、F1值等传统指标，以及任务特定的定制化评估标准。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="sft">
+            <h2>全量SFT（监督微调）</h2>
+            <p>全量监督微调（Full Supervised Fine-tuning）是在整个模型参数上进行的端到端训练过程，通常需要大量的计算资源和高质量的标注数据。这种方法能够实现最彻底的模型适配，特别适用于需要深度定制化的场景。</p>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>训练架构</h3>
+                    <p>分析分布式训练、混合精度计算、梯度累积等技术，优化大规模模型训练效率和稳定性。</p>
+                </div>
+                <div class="tech-card">
+                    <h3>损失函数设计</h3>
+                    <p>针对不同任务设计定制化的损失函数，如交叉熵损失、对比损失、多任务学习损失等。</p>
+                </div>
+                <div class="tech-card">
+                    <h3>正则化技术</h3>
+                    <p>应用Dropout、权重衰减、早停等技术防止过拟合，确保模型的泛化能力和鲁棒性。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="post-training">
+            <h2>后训练技术</h2>
+            <p>后训练（Post-training）是指在模型完成初始训练后，通过各种技术手段进一步优化和提升模型性能的过程。这些技术包括知识蒸馏、模型压缩、对齐优化等，旨在使模型更适合实际应用场景。</p>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>知识蒸馏</h3>
+                    <p>将大模型的知识迁移到小模型中，实现模型轻量化的同时保持高性能，适用于边缘计算和移动设备部署。</p>
+                </div>
+                <div class="tech-card">
+                    <h3>人类反馈强化学习</h3>
+                    <p>通过人类反馈数据优化模型行为，提升模型的指令遵循能力、安全性以及用户体验。</p>
+                </div>
+                <div class="tech-card">
+                    <h3>模型对齐</h3>
+                    <p>确保模型输出与人类价值观、社会规范保持一致，减少有害、偏见或不适当的内容生成。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="applications">
+            <h2>技术应用场景</h2>
+            <p>我们分析的AI技术在多个领域都有广泛应用：</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li style="margin-bottom: 0.5rem;">📋 <strong>内容创作</strong>：个性化写作助手、创意内容生成、多语言翻译</li>
+                <li style="margin-bottom: 0.5rem;">🧠 <strong>智能客服</strong>：对话系统优化、情感分析、用户意图理解</li>
+                <li style="margin-bottom: 0.5rem;">📊 <strong>数据分析</strong>：自动化报告生成、数据洞察提取、预测分析</li>
+                <li style="margin-bottom: 0.5rem;">🎓 <strong>教育辅助</strong>：个性化学习路径、智能答疑、知识图谱构建</li>
+                <li>🛡️ <strong>安全合规</strong>：内容审核、风险检测、合规性分析</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <h3>联系我们</h3>
+                <p>我们欢迎技术交流与合作，共同推动个人AI技术的发展。</p>
+                <div class="contact-info">
+                    <p>📧 邮箱: contact@aitech-research.com</p>
+                    <p>📱 微信: AI_Tech_Research</p>
+                    <p>⏰ 工作时间: 周一至周五 9:00-18:00</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="icp-info">
+        <div class="container">
+            <p>© 2025 个人AI技术研究中心 版权所有</p>
+            <p>粤ICP备2025482229号-1 | 粤公网安备 [请补充公安备案号]</p>
+            <p>网站内容仅供参考，不构成任何投资或技术建议</p>
+        </div>
+    </div>
+
+    <script>
+        // 简单的页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            });
+            
+            // 模拟滚动效果
+            setTimeout(() => {
+                sections.forEach((section, index) => {
+                    setTimeout(() => {
+                        section.style.opacity = '1';
+                        section.style.transform = 'translateY(0)';
+                    }, 300 * index);
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>
