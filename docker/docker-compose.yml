@@ -6,5 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "7016:7016"
     restart: unless-stopped
+  
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/html:/usr/share/nginx/html
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
