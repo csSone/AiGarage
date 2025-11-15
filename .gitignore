@@ -212,3 +212,6 @@ web/node_modules/*
 web/package-lock.json
 log/*
 logs/*
+
+# Model files
+model_server/model/*
