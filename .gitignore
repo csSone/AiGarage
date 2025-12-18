@@ -206,3 +206,12 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 go.sum
+backend/server
+
+web/node_modules/*
+web/package-lock.json
+log/*
+logs/*
+
+# Model files
+model_server/model/*
