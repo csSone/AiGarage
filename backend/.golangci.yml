@@ -1,0 +1,172 @@
+# golangci-lint configuration for AiGarage backend
+# See https://golangci-lint.run/usage/configuration/
+
+run:
+  # Timeout for analysis
+  timeout: 5m
+  # Which dirs to skip
+  skip-dirs:
+    - lib
+  # Which files to skip
+  skip-files: []
+
+linters:
+  # Enable all available linters
+  enable-all: false
+  # Enable specific linters
+  enable:
+    - bodyclose         # Check whether HTTP response body is closed
+    - deadcode          # Find unused code
+    - errcheck          # Check for unchecked errors
+    - gofmt             # Check if code is gofmt'd
+    - goimports         # Check import statements are formatted
+    - gosimple          # Simplify code
+    - govet             # Vet examines Go source code
+    - ineffassign       # Detect ineffectual assignments
+    - misspell          # Find commonly misspelled English words
+    - revive            # Fast, configurable, extensible, flexible, and beautiful linter
+    - staticcheck       # Go static analysis
+    - typecheck         # Check Go type inference
+    - unconvert         # Remove unnecessary type conversions
+    - unused            # Check for unused constants, variables, functions and types
+    - varcheck          # Find unused global variables and constants
+    # Security linters
+    - gosec             # Inspect source code for security problems
+    # Style linters
+    - gocritic          # Provides diagnostics that check for bugs, performance and style issues
+    - gocyclo           # Compute cyclomatic complexities
+    - godot             # Check if comments end in a period
+    - goimports         # Check import statements are formatted
+
+  # Disable specific linters
+  disable:
+    - exhaustive        # Not useful for this project
+    - exhaustivestruct  # Not useful for this project
+    - funlen            # Too strict for this project
+    - wsl               # Too strict for this project
+
+linters-settings:
+  errcheck:
+    # Report about not checking of errors in type assertions: `a := b.(MyStruct)`
+    check-type-assertions: true
+    # Check for ignored errors in blank identifier assignment
+    check-blank: true
+
+  gofmt:
+    # Simplify code
+    simplify: true
+
+  goimports:
+    # Local import prefixes
+    local-prefixes: github.com/yourusername/aigarage
+
+  govet:
+    # Enable all analyzers
+    enable-all: true
+    disable:
+      - shadow         # Disabled due to high false positive rate
+
+  gocyclo:
+    # Minimal code complexity to report
+    min-complexity: 15
+
+  gocritic:
+    # Enable multiple checks by tags
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+
+  revive:
+    # Set confidence level
+    confidence: 0.8
+    rules:
+      - name: exported
+        severity: warning
+      - name: var-naming
+        severity: warning
+      - name: blank-imports
+        severity: warning
+      - name: context-as-argument
+        severity: warning
+      - name: context-keys-type
+        severity: warning
+      - name: dot-imports
+        severity: warning
+      - name: error-return
+        severity: warning
+      - name: error-strings
+        severity: warning
+      - name: error-naming
+        severity: warning
+      - name: if-return
+        severity: warning
+      - name: increment-decrement
+        severity: warning
+      - name: var-declaration
+        severity: warning
+      - name: package-comments
+        severity: warning
+      - name: range
+        severity: warning
+      - name: receiver-naming
+        severity: warning
+      - name: time-naming
+        severity: warning
+      - name: unexported-return
+        severity: warning
+      - name: indent-error-flow
+        severity: warning
+      - name: errorf
+        severity: warning
+      - name: empty-block
+        severity: warning
+      - name: superfluous-else
+        severity: warning
+      - name: unused-parameter
+        severity: warning
+      - name: unreachable-code
+        severity: warning
+      - name: redefines-builtin-id
+        severity: warning
+
+  misspell:
+    # Correct spellings using locale preferences
+    locale: US
+
+  staticcheck:
+    # Select checks to run
+    checks: ["all"]
+
+issues:
+  # Maximum issues count per one linter
+  max-issues-per-linter: 0
+  # Maximum count of issues with the same text
+  max-same-issues: 0
+  # Show only new issues
+  new: false
+  # Exclude specific issues
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - goconst
+
+# Output configuration
+output:
+  # Format: colored-line-number|line-number|json|tab|checkstyle|code-climate
+  format: colored-line-number
+  # Print lines of code with issue
+  print-issued-lines: true
+  # Print linter name in the end of issue text
+  print-linter-name: true
+  # Make issues output unique by line
+  uniq-by-line: true
+  # Sort results by: filepath, line and column
+  sort-results: true
