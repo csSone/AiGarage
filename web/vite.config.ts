@@ -6,7 +6,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { resolve } from 'path'
 
 export default defineConfig({
-  plugins:[
+  plugins: [
     vue(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
@@ -20,8 +20,17 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
-  server:{
+  base: '/',  // Root path deployment
+  server: {
     host: '0.0.0.0',
-    port: 7016
+    port: 7016,
+    strictPort: true,
+    cors: true,  // For nginx proxy
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'terser',
   },
 })

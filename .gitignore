@@ -215,3 +215,4 @@ logs/*
 
 # Model files
 model_server/model/*
+CLAUDE.md
