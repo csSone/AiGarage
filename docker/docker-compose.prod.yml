@@ -1,14 +1,60 @@
+# AiGarage Docker Compose - Production Overrides
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
 services:
-  frontend-builder:
-    image: node:20-alpine
-    working_dir: /app
+  backend:
+    build:
+      target: production
+    environment:
+      - GIN_MODE=release
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  model-server:
+    build:
+      target: production
+    environment:
+      - LOG_LEVEL=info
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+  frontend:
+    build:
+      target: production
+    environment:
+      - NODE_ENV=production
     volumes:
-      - ../web:/app
-      - ../nginx/dist:/app/dist
-    command: sh -c "npm install && npm run build"
-    container_name: aigarage-frontend-builder
+      - ../nginx/dist:/app/dist  # Copy build output to nginx directory
+    restart: always
+    # In production, build once then stop. Use: docker-compose run --rm frontend npm run build
+    profiles:
+      - build-only  # Don't start with default profile
 
   nginx:
     volumes:
-      - ../nginx/conf.d/default.prod.conf:/etc/nginx/conf.d/default.conf
-      - ../nginx/dist:/usr/share/nginx/html/dist:ro
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d/default.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../nginx/dist:/usr/share/nginx/html/dist:ro  # Mount pre-built frontend files
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.25'
+          memory: 64M

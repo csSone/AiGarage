@@ -1,20 +1,31 @@
+# AiGarage Docker Compose - Development Overrides
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
 services:
+  backend:
+    volumes:
+      - ../backend:/app
+      - /app/log  # Prevent overwriting log directory
+    environment:
+      - GIN_MODE=debug
+    command: ["go", "run", "main.go"]  # Override to run from source in dev
+
+  model-server:
+    volumes:
+      - ../model_server:/app
+    environment:
+      - LOG_LEVEL=debug
+
   frontend:
-    image: node:20-alpine
-    working_dir: /app
     volumes:
       - ../web:/app
-      - /app/node_modules
+      - /app/node_modules  # Prevent overwriting node_modules
     ports:
-      - "7016:7016"
-    command: sh -c "npm install && npm run dev"
-    restart: unless-stopped
-    container_name: aigarage-frontend
+      - "7016:7016"  # Expose for direct access during development
     environment:
       - NODE_ENV=development
 
   nginx:
     volumes:
-      - ../nginx/conf.d/default.dev.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - frontend
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d/default.dev.conf:/etc/nginx/conf.d/default.conf:ro

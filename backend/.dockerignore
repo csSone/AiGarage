@@ -1,0 +1,7 @@
+*.log
+log/*
+server
+.env
+.DS_Store
+*.test
+.claude/

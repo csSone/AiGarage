@@ -1,11 +1,100 @@
+# AiGarage Docker Compose - Base Configuration
+# This file contains the base configuration for all services
+# Environment-specific overrides are in docker-compose.{dev,prod}.yml
+
 services:
+  # Backend API Service (Go)
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: aigarage-backend
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - aigarage-network
+    environment:
+      - GIN_MODE=release
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Model Server Service (Python)
+  model-server:
+    build:
+      context: ../model_server
+      dockerfile: Dockerfile
+    container_name: aigarage-model-server
+    restart: unless-stopped
+    expose:
+      - "8000"
+    networks:
+      - aigarage-network
+    env_file:
+      - .env
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Frontend Service (Vue)
+  frontend:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+      target: development
+    container_name: aigarage-frontend
+    restart: unless-stopped
+    expose:
+      - "7016"
+    networks:
+      - aigarage-network
+    environment:
+      - NODE_ENV=development
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:7016/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Nginx Reverse Proxy
   nginx:
-    image: nginx:latest
-    volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ../nginx/html:/usr/share/nginx/html
+    image: nginx:alpine
+    container_name: aigarage-nginx
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-    container_name: aigarage-nginx
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - aigarage-network
+    depends_on:
+      backend:
+        condition: service_healthy
+      model-server:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  aigarage-network:
+    driver: bridge
+    name: aigarage-network
