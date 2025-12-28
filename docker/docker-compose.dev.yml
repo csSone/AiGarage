@@ -1,0 +1,20 @@
+services:
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ../web:/app
+      - /app/node_modules
+    ports:
+      - "7016:7016"
+    command: sh -c "npm install && npm run dev"
+    restart: unless-stopped
+    container_name: aigarage-frontend
+    environment:
+      - NODE_ENV=development
+
+  nginx:
+    volumes:
+      - ../nginx/conf.d/default.dev.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
