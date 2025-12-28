@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const message = ref('这是一个scoped样式演示组件')
+// No reactive state needed for this component
 </script>
 
 <template>

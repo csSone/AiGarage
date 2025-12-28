@@ -7,16 +7,6 @@ const router = createRouter({
       path: '/',
       name: 'Home',
       component: () => import('../view/Home.vue')
-    },
-    {
-      path: '/demo',
-      name: 'Demo',
-      component: () => import('../view/PositionDemo.vue')
-    },
-    {
-      path: '/position',
-      name: 'zPosition',
-      component: () => import('../view/ZIndexDemo.vue')
     }
   ]
 })

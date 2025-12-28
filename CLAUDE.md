@@ -15,11 +15,13 @@ The project consists of three main components:
    - Listens on port 8080 by default
    - Managed by `start.sh` script with PID tracking and auto-restart
 
-2. **Model Server** (`model_server/`): Python vLLM service
-   - Entry point: `server.py`
-   - Provides OpenAI-compatible API endpoints (`/v1/chat/completions`)
+2. **Model Server** (`model_server/`): Python FastAPI + vLLM service
+   - Entry point: `server.py` (run as module: `python -m model_server.server`)
+   - Uses FastAPI with uvicorn for OpenAI-compatible API
+   - Provides `/v1/chat/completions` endpoint
    - Requires `MODEL_PATH` environment variable
    - Default port: 8000 (configurable via `PORT` env var)
+   - Python tooling configured in `pyproject.toml` (black, isort, mypy)
 
 3. **Frontend** (`web/`): Vue 3 + TypeScript + Vite
    - Development server runs on port 7016
@@ -39,6 +41,22 @@ go build -o server main.go
 ./start.sh
 ```
 
+**Testing and Linting:**
+```bash
+cd backend
+# Run tests (if tests exist)
+go test -v -race ./...
+
+# Run go vet
+go vet ./...
+
+# Run golangci-lint (uses backend/.golangci.yml config)
+golangci-lint run --config=.golangci.yml
+
+# Format code
+go fmt ./...
+```
+
 ### Model Server (Python)
 ```bash
 cd model_server
@@ -47,13 +65,42 @@ export PORT=8000  # optional, defaults to 8000
 python -m model_server.server
 ```
 
+**Code Quality and Testing:**
+```bash
+cd model_server
+# Format code with black
+black .
+
+# Sort imports with isort
+isort .
+
+# Type check with mypy (configured in pyproject.toml)
+mypy .
+
+# Lint with flake8
+flake8 . --max-line-length=88
+
+# Run tests (if tests exist)
+pytest
+```
+
 ### Frontend (Vue)
 ```bash
 cd web
 npm install
 npm run dev      # Development server on :7016
-npm run build    # Production build
+npm run build    # Production build (includes type checking via vue-tsc)
 npm run preview  # Preview production build
+```
+
+**Linting and Type Checking:**
+```bash
+cd web
+# Type check (strict mode enabled)
+npx vue-tsc --noEmit
+
+# ESLint (if configured)
+npx eslint . --ext .vue,.js,.ts
 ```
 
 ### Docker Deployment
@@ -67,7 +114,9 @@ docker-compose up -d
 Copy `.env.example` to `.env` and configure:
 - `MODEL_PATH`: Required path to the LLM model files
 - `PORT`: Model server port (default: 8000)
-- `BACKEND_PATH`: Path to backend directory (used by start.sh)
+- `BACKEND_PATH`: Path to backend directory (used by start.sh, default: `backend`)
+
+**Note:** The `.env.example` file is currently minimal. You may need to add variables directly to `.env` based on your setup.
 
 ## Key Dependencies
 
@@ -77,10 +126,15 @@ Copy `.env.example` to `.env` and configure:
 
 ## Project Structure Notes
 
-- `lib/`: Shared Go library (linked via go.mod replace directive)
+- `lib/`: Shared Go library (linked via go.mod replace directive) - currently empty, reserved for future shared code
 - `nginx/`: Reverse proxy configuration for production
 - `log/`: Application logs (backend.log, build.log, start.log)
 - The `start.sh` script manages the backend process lifecycle with PID tracking
+
+**Service Communication:**
+- Frontend (port 7016) → Backend (port 8080) → Model Server (port 8000)
+- The Go backend acts as a gateway, handling business logic and forwarding requests to the Python model server
+- Model server provides OpenAI-compatible `/v1/chat/completions` endpoint for LLM inference
 
 ---
 
@@ -96,6 +150,11 @@ Copy `.env.example` to `.env` and configure:
 - Enable strict mode in TypeScript (already configured in `tsconfig.app.json`)
 - Use `unknown` instead of `any` for types that are truly unknown at compile time
 - Type all function parameters and return values
+
+**TypeScript Configuration:**
+- Strict mode is enabled with additional checks: `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`
+- Type checking is performed during `npm run build` via vue-tsc
+- For standalone type checks without building: `npx vue-tsc --noEmit`
 
 **MUST NOT:**
 - Use `any` type except in migration code with TODO comments
@@ -655,76 +714,17 @@ repos:
 
 #### B. CI/CD Pipeline Standards
 
-**EXISTING**: CodeQL security scanning (`.github/workflows/codeql.yml`)
+**EXISTING WORKFLOWS:**
+- `.github/workflows/ci.yml` - Full CI pipeline for all three services
+- `.github/workflows/codeql.yml` - CodeQL security scanning
 
-**MUST ADD:**
-- Automated testing on PR
-- Type checking for TypeScript and Python
-- Code coverage reporting
-- Dependency vulnerability scanning
-
-**RECOMMENDED WORKFLOW (`.github/workflows/ci.yml`):**
-```yaml
-name: CI
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [frontend, backend, model-server]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        if: matrix.service == 'frontend'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install and Test Frontend
-        if: matrix.service == 'frontend'
-        run: |
-          cd web
-          npm ci
-          npm run type-check
-          npm run lint
-          npm run test
-
-      - name: Setup Go
-        if: matrix.service == 'backend'
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.23.4'
-
-      - name: Test Backend
-        if: matrix.service == 'backend'
-        run: |
-          cd backend
-          go test ./...
-          go vet ./...
-
-      - name: Setup Python
-        if: matrix.service == 'model-server'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Test Model Server
-        if: matrix.service == 'model-server'
-        run: |
-          cd model_server
-          pip install -r requirements.txt
-          mypy .
-          flake8
-```
+The CI workflow already includes:
+- Automated testing on push/PR to main, develop, and feature/* branches
+- Type checking for TypeScript (vue-tsc via build)
+- Go tests, vet, and build
+- Python black, isort, flake8, mypy checks
+- Security scanning with Trivy
+- Dependency review for PRs
 
 #### C. Code Review Guidelines
 
